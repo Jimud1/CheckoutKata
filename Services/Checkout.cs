@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Data;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,8 @@ namespace Services
         private List<Product> _predefinedProducts;
         public Checkout()
         {
-            var itemA = new Product("hello", 1, null);
-            _predefinedProducts.Add(itemA);
+            _predefinedProducts = new ProductContext()._products;
+            _basket = new List<Product>();
         }
         public int GetTotalPrice()
         {
@@ -39,7 +40,7 @@ namespace Services
 
         public void Scan(string item)
         {
-            var itemToAdd = _predefinedProducts.Find(p => p.SKU == item);
+            var itemToAdd = _predefinedProducts.Find(p => p.SKU.ToLower() == item);
             if (itemToAdd == null) throw new ArgumentException("This item doesn't exist");
             _basket.Add(itemToAdd);
         }
@@ -53,7 +54,7 @@ namespace Services
         {
             var query = specialOffers.GroupBy(p => p.SKU);
             int toAdd = 0,
-                    toRemove = 0;
+                toRemove = 0;
 
             foreach (var productGroup in query)
             {

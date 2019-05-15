@@ -1,6 +1,7 @@
+using Data;
 using NUnit.Framework;
-using Models;
 using Services;
+using System;
 
 namespace Tests
 {
@@ -15,15 +16,31 @@ namespace Tests
         }
 
         [Test]
+        public void ItemDidntScan()
+        {
+            var test = "z";
+            var ex = Assert.Throws<ArgumentException>(() => _checkout.Scan(test));
+            Assert.That(ex.Message, Is.EqualTo("This item doesn't exist"));
+        }
+
+        [Test]
+        public void ItemDidScanPass()
+        {
+            var test = "a";
+            Assert.DoesNotThrow(() => _checkout.Scan(test));
+        }
+
+        [Test]
         public void SimpleCalculatePrice()
         {
             //assemble
-            var itemA = new Product("hello", 1, null);
+            var itemA = "a";
             //act
-            _checkout.Scan(itemA.SKU);
+            _checkout.Scan(itemA);
             var result = _checkout.GetTotalPrice();
             //asset
-            Assert.AreEqual(itemA.UnitPrice, result);
+            Assert.AreEqual(new ProductContext()._products.Find(p => p.SKU .ToLower()== itemA).UnitPrice, 
+                result);
         }
     }
 }
